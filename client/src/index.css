@@ -1,0 +1,284 @@
+@import "tailwindcss";
+
+/* ========================================
+   StayNest - Global Styles
+   ======================================== */
+
+/* ========================================
+   Root
+   ======================================== */
+
+:root {
+  font-family:
+    Inter,
+    "Plus Jakarta Sans",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: #111827;
+  background-color: #f9fafb;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   Base Reset
+   ======================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  min-width: 320px;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+
+  background-color: #f9fafb;
+
+  overflow-x: hidden;
+
+  font-family: inherit;
+  line-height: 1.5;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   Root Application
+   ======================================== */
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ========================================
+   Typography
+   ======================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a {
+  overflow-wrap: break-word;
+}
+
+/* ========================================
+   Links
+   ======================================== */
+
+/*
+  Do NOT use:
+  color: inherit;
+
+  Tailwind text utilities such as
+  text-blue-700 would otherwise be overridden.
+*/
+
+a {
+  text-decoration: none;
+}
+
+/* ========================================
+   Images / Media
+   ======================================== */
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+/* ========================================
+   Forms
+   ======================================== */
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* ========================================
+   Accessibility - Keyboard Focus
+   ======================================== */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* ========================================
+   Responsive Container
+   ======================================== */
+
+.responsive-container {
+  width: 100%;
+  max-width: 1280px;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* ========================================
+   Utility
+   ======================================== */
+
+.min-w-0 {
+  min-width: 0;
+}
+
+/* ========================================
+   Horizontal Scroll Containers
+   ======================================== */
+
+.table-responsive,
+.horizontal-scroll {
+  width: 100%;
+  max-width: 100%;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   Hidden Scrollbar
+   ======================================== */
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================================
+   Notification Animation
+   ======================================== */
+
+@keyframes notificationDropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ========================================
+   Mobile
+   ======================================== */
+
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+
+  .responsive-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* ========================================
+   Tablet
+   ======================================== */
+
+@media (min-width: 641px) and (max-width: 1023px) {
+  .responsive-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* ========================================
+   Desktop
+   ======================================== */
+
+@media (min-width: 1024px) {
+  .responsive-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* ========================================
+   Reduced Motion
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
