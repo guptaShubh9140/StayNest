@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, CircleAlert, Lock } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -94,22 +95,12 @@ const Login = () => {
                 role="alert"
                 className="mb-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                <CircleAlert
+                  size={18}
+                  strokeWidth={2}
                   className="mt-0.5 shrink-0"
                   aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="9" />
-                  <line x1="12" x2="12" y1="8" y2="12" />
-                  <line x1="12" x2="12.01" y1="16" y2="16" />
-                </svg>
+                />
 
                 <span>{error}</span>
               </div>
@@ -140,14 +131,12 @@ const Login = () => {
 
               {/* Password */}
               <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-semibold text-slate-700"
-                  >
-                    Password
-                  </label>
-                </div>
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-sm font-semibold text-slate-700"
+                >
+                  Password
+                </label>
 
                 <input
                   id="password"
@@ -182,43 +171,40 @@ const Login = () => {
                   <>
                     <span>Sign in</span>
 
-                    <svg
-                      width="17"
-                      height="17"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    <ArrowRight
+                      size={17}
+                      strokeWidth={2}
                       aria-hidden="true"
-                    >
-                      <path d="M5 12h14" />
-                      <path d="m13 6 6 6-6 6" />
-                    </svg>
+                    />
                   </>
                 )}
               </button>
             </form>
 
-            {/* Security note */}
-            <div className="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <rect width="18" height="11" x="3" y="11" rx="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
+            {/* Create account */}
+            <div className="mt-6 border-t border-gray-100 pt-6 text-center">
+              <p className="text-sm text-gray-500">
+                Don't have a StayNest account?{" "}
+                <Link
+                  to="/register"
+                  className="font-semibold text-blue-600 transition hover:text-blue-700 hover:underline"
+                >
+                  Create an account
+                </Link>
+              </p>
+            </div>
 
-              <span>Your account is protected with secure authentication.</span>
+            {/* Security note */}
+            <div className="mt-5 flex items-center justify-center gap-2 text-xs text-gray-500">
+              <Lock
+                size={14}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+
+              <span>
+                Your account is protected with secure authentication.
+              </span>
             </div>
           </div>
         </div>

@@ -110,11 +110,7 @@ const Home = () => {
                   text-blue-700 shadow-sm sm:text-sm
                 "
               >
-                <Sparkles
-                  size={15}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
+                <Sparkles size={15} strokeWidth={2} aria-hidden="true" />
 
                 <span>Find your next stay with StayNest</span>
               </div>
@@ -142,8 +138,8 @@ const Home = () => {
                   sm:text-lg sm:leading-8
                 "
               >
-                Discover verified PGs, hostels and co-living
-                spaces near your college or workplace.
+                Discover verified PGs, hostels and co-living spaces near your
+                college or workplace.
               </p>
 
               {/* CTA */}
@@ -154,16 +150,27 @@ const Home = () => {
                   sm:flex-row sm:items-center
                 "
               >
-                <Button
-                  as={Link}
+                <Link
                   to="/properties"
-                  size="lg"
-                  icon={ArrowRight}
-                  iconPosition="right"
-                  className="w-full sm:w-auto"
+                  className="
+    inline-flex min-h-12 w-full
+    items-center justify-center gap-2
+    rounded-xl bg-blue-600
+    px-5 py-3 text-sm font-semibold
+    text-white shadow-sm
+    transition-all duration-200
+    hover:bg-blue-700
+    hover:shadow-md
+    focus:outline-none
+    focus:ring-2 focus:ring-blue-500
+    focus:ring-offset-2
+    sm:w-auto
+  "
                 >
-                  Find Your Stay
-                </Button>
+                  <span>Find Your Stay</span>
+
+                  <ArrowRight size={17} strokeWidth={2} aria-hidden="true" />
+                </Link>
 
                 <Link
                   to="/properties"
@@ -222,11 +229,7 @@ const Home = () => {
                           text-blue-600 shadow-sm
                         "
                       >
-                        <MapPin
-                          size={19}
-                          strokeWidth={2}
-                          aria-hidden="true"
-                        />
+                        <MapPin size={19} strokeWidth={2} aria-hidden="true" />
                       </div>
 
                       <div className="min-w-0">
@@ -316,12 +319,7 @@ const Home = () => {
                       focus:ring-offset-2
                     "
                   >
-                    <Search
-                      size={18}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                    />
-
+                    <Search size={18} strokeWidth={2} aria-hidden="true" />
                     Search Properties
                   </Link>
                 </div>
@@ -339,10 +337,7 @@ const Home = () => {
                     aria-hidden="true"
                   />
 
-                  <span>
-                    Explore approved properties available
-                    on StayNest
-                  </span>
+                  <span>Explore approved properties available on StayNest</span>
                 </div>
               </div>
             </div>
@@ -421,8 +416,8 @@ const Home = () => {
                   sm:text-base
                 "
               >
-                A simpler way to discover, compare and
-                manage your accommodation.
+                A simpler way to discover, compare and manage your
+                accommodation.
               </p>
             </div>
 
@@ -458,11 +453,7 @@ const Home = () => {
                         group-hover:scale-105
                       `}
                     >
-                      <Icon
-                        size={23}
-                        strokeWidth={1.9}
-                        aria-hidden="true"
-                      />
+                      <Icon size={23} strokeWidth={1.9} aria-hidden="true" />
                     </div>
 
                     <h3
@@ -520,9 +511,8 @@ const Home = () => {
                   sm:text-base
                 "
               >
-                From discovering a property to submitting
-                your booking request, StayNest keeps the
-                experience simple.
+                From discovering a property to submitting your booking request,
+                StayNest keeps the experience simple.
               </p>
             </div>
 
@@ -568,11 +558,7 @@ const Home = () => {
                           text-white shadow-md
                         "
                       >
-                        <Icon
-                          size={21}
-                          strokeWidth={2}
-                          aria-hidden="true"
-                        />
+                        <Icon size={21} strokeWidth={2} aria-hidden="true" />
                       </div>
 
                       <span
@@ -610,99 +596,90 @@ const Home = () => {
         </section>
 
         {/* =====================================================
-            CTA
-        ====================================================== */}
-        <section className="bg-gray-950">
+    CTA
+====================================================== */}
+        <section className="bg-slate-950">
           <div className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
             <div
               className="
-                relative overflow-hidden
-                rounded-3xl bg-blue-600
-                px-6 py-12 text-center
-                shadow-2xl sm:px-10 sm:py-16
-              "
+        relative overflow-hidden
+        rounded-3xl bg-blue-600
+        px-6 py-12 text-center
+        shadow-2xl sm:px-10 sm:py-16
+      "
             >
               {/* Decorative circles */}
               <div
                 aria-hidden="true"
                 className="
-                  pointer-events-none absolute
-                  -right-20 -top-20 h-56 w-56
-                  rounded-full bg-white/10
-                "
+          pointer-events-none absolute
+          -right-20 -top-20 h-56 w-56
+          rounded-full bg-white/10
+        "
               />
 
               <div
                 aria-hidden="true"
                 className="
-                  pointer-events-none absolute
-                  -bottom-24 -left-16 h-64 w-64
-                  rounded-full bg-white/10
-                "
+          pointer-events-none absolute
+          -bottom-24 -left-16 h-64 w-64
+          rounded-full bg-white/10
+        "
               />
 
               <div className="relative">
                 <div
                   className="
-                    mx-auto flex h-12 w-12
-                    items-center justify-center
-                    rounded-2xl bg-white/15
-                    text-white
-                  "
+            mx-auto flex h-12 w-12
+            items-center justify-center
+            rounded-2xl bg-white/15
+            text-white
+          "
                 >
-                  <Sparkles
-                    size={23}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                  />
+                  <Sparkles size={23} strokeWidth={2} aria-hidden="true" />
                 </div>
 
                 <h2
                   className="
-                    mt-5 text-2xl font-bold
-                    tracking-tight text-white
-                    sm:text-3xl md:text-4xl
-                  "
+            mt-5 text-2xl font-bold
+            tracking-tight text-white
+            sm:text-3xl md:text-4xl
+          "
                 >
                   Ready to find your next stay?
                 </h2>
 
                 <p
                   className="
-                    mx-auto mt-4 max-w-2xl
-                    text-sm leading-6 text-blue-100
-                    sm:text-base
-                  "
+            mx-auto mt-4 max-w-2xl
+            text-sm leading-6 text-blue-100
+            sm:text-base
+          "
                 >
-                  Explore available properties and find
-                  a place that fits your needs.
+                  Explore available properties and find a place that fits your
+                  needs.
                 </p>
 
                 <Link
                   to="/properties"
                   className="
-                    mt-7 inline-flex min-h-12
-                    w-full items-center
-                    justify-center gap-2 rounded-xl
-                    bg-white px-6 py-3.5
-                    text-sm font-bold text-blue-700
-                    shadow-lg transition-all duration-200
-                    hover:bg-blue-50
-                    hover:shadow-xl
-                    focus:outline-none
-                    focus:ring-2 focus:ring-white
-                    focus:ring-offset-2
-                    focus:ring-offset-blue-600
-                    sm:w-auto
-                  "
+            mt-7 inline-flex min-h-12
+            w-full items-center
+            justify-center gap-2 rounded-xl
+            bg-white px-6 py-3.5
+            text-sm font-bold text-blue-700
+            shadow-lg transition-all duration-200
+            hover:bg-blue-50
+            hover:shadow-xl
+            focus:outline-none
+            focus:ring-2 focus:ring-white
+            focus:ring-offset-2
+            focus:ring-offset-blue-600
+            sm:w-auto
+          "
                 >
                   Explore Properties
-
-                  <ArrowRight
-                    size={17}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                  />
+                  <ArrowRight size={17} strokeWidth={2} aria-hidden="true" />
                 </Link>
               </div>
             </div>

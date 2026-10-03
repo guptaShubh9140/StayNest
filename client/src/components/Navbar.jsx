@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Bell,
   Building2,
   CalendarDays,
   ChevronRight,
@@ -152,6 +153,7 @@ const Navbar = () => {
                 strokeWidth={2}
                 aria-hidden="true"
               />
+
               <span>Home</span>
             </Link>
 
@@ -165,6 +167,7 @@ const Navbar = () => {
                 strokeWidth={2}
                 aria-hidden="true"
               />
+
               <span>Properties</span>
             </Link>
 
@@ -181,6 +184,7 @@ const Navbar = () => {
                   strokeWidth={2}
                   aria-hidden="true"
                 />
+
                 <span>My Bookings</span>
               </Link>
             )}
@@ -193,7 +197,7 @@ const Navbar = () => {
                 <Link
                   to="/owner/dashboard"
                   className={desktopLinkClass(
-                    "/owner/dashboard"
+                    "/owner/dashboard",
                   )}
                 >
                   <LayoutDashboard
@@ -201,13 +205,14 @@ const Navbar = () => {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
+
                   <span>Dashboard</span>
                 </Link>
 
                 <Link
                   to="/owner/properties"
                   className={desktopLinkClass(
-                    "/owner/properties"
+                    "/owner/properties",
                   )}
                 >
                   <Building2
@@ -215,6 +220,7 @@ const Navbar = () => {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
+
                   <span>My Properties</span>
                 </Link>
               </>
@@ -228,7 +234,7 @@ const Navbar = () => {
                 <Link
                   to="/admin/dashboard"
                   className={desktopLinkClass(
-                    "/admin/dashboard"
+                    "/admin/dashboard",
                   )}
                 >
                   <LayoutDashboard
@@ -236,13 +242,14 @@ const Navbar = () => {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
+
                   <span>Dashboard</span>
                 </Link>
 
                 <Link
                   to="/admin/users"
                   className={desktopLinkClass(
-                    "/admin/users"
+                    "/admin/users",
                   )}
                 >
                   <Users
@@ -250,13 +257,14 @@ const Navbar = () => {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
+
                   <span>Users</span>
                 </Link>
 
                 <Link
                   to="/admin/properties"
                   className={desktopLinkClass(
-                    "/admin/properties"
+                    "/admin/properties",
                   )}
                 >
                   <Building2
@@ -264,13 +272,14 @@ const Navbar = () => {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
+
                   <span>Properties</span>
                 </Link>
 
                 <Link
                   to="/admin/bookings"
                   className={desktopLinkClass(
-                    "/admin/bookings"
+                    "/admin/bookings",
                   )}
                 >
                   <CalendarDays
@@ -278,6 +287,7 @@ const Navbar = () => {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
+
                   <span>Bookings</span>
                 </Link>
               </>
@@ -288,26 +298,56 @@ const Navbar = () => {
               Desktop Right Section
           ========================== */}
           <div className="hidden items-center gap-2 md:flex">
-            {/* Logged Out */}
+            {/* =========================
+                Logged Out
+            ========================== */}
             {!isLoggedIn && (
-              <Link
-                to="/login"
-                className="
-                  inline-flex min-h-10 items-center
-                  justify-center rounded-xl bg-blue-600
-                  px-4 py-2.5 text-sm font-semibold
-                  text-white shadow-sm transition-all
-                  duration-200 hover:bg-blue-700
-                  hover:shadow-md focus:outline-none
-                  focus:ring-2 focus:ring-blue-500
-                  focus:ring-offset-2
-                "
-              >
-                Login
-              </Link>
+              <div className="flex items-center gap-2">
+                {/* Login */}
+                <Link
+                  to="/login"
+                  className="
+                    inline-flex min-h-10 items-center
+                    justify-center rounded-xl
+                    border border-gray-200 bg-white
+                    px-4 py-2.5 text-sm font-semibold
+                    text-gray-700 shadow-sm
+                    transition-all duration-200
+                    hover:border-blue-200
+                    hover:bg-blue-50
+                    hover:text-blue-600
+                    focus:outline-none
+                    focus:ring-2 focus:ring-blue-500
+                    focus:ring-offset-2
+                  "
+                >
+                  Login
+                </Link>
+
+                {/* Sign Up */}
+                <Link
+                  to="/register"
+                  className="
+                    inline-flex min-h-10 items-center
+                    justify-center rounded-xl
+                    bg-blue-600 px-4 py-2.5
+                    text-sm font-semibold text-white
+                    shadow-sm transition-all duration-200
+                    hover:bg-blue-700
+                    hover:shadow-md
+                    focus:outline-none
+                    focus:ring-2 focus:ring-blue-500
+                    focus:ring-offset-2
+                  "
+                >
+                  Sign up
+                </Link>
+              </div>
             )}
 
-            {/* Logged In */}
+            {/* =========================
+                Logged In
+            ========================== */}
             {isLoggedIn && (
               <>
                 {/* Notifications */}
@@ -370,9 +410,10 @@ const Navbar = () => {
                     justify-center gap-2 rounded-xl
                     border border-gray-200 bg-white
                     px-3 py-2 text-sm font-semibold
-                    text-gray-600 transition-all
-                    duration-200 hover:border-red-200
-                    hover:bg-red-50 hover:text-red-600
+                    text-gray-600 transition-all duration-200
+                    hover:border-red-200
+                    hover:bg-red-50
+                    hover:text-red-600
                     focus:outline-none
                     focus:ring-2 focus:ring-red-500
                     focus:ring-offset-2
@@ -454,6 +495,7 @@ const Navbar = () => {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
+
                   Home
                 </span>
 
@@ -468,9 +510,7 @@ const Navbar = () => {
               <Link
                 to="/properties"
                 onClick={closeMenu}
-                className={mobileLinkClass(
-                  "/properties"
-                )}
+                className={mobileLinkClass("/properties")}
               >
                 <span className="flex items-center gap-3">
                   <Building2
@@ -478,6 +518,7 @@ const Navbar = () => {
                     strokeWidth={2}
                     aria-hidden="true"
                   />
+
                   Properties
                 </span>
 
@@ -495,9 +536,7 @@ const Navbar = () => {
                 <Link
                   to="/bookings"
                   onClick={closeMenu}
-                  className={mobileLinkClass(
-                    "/bookings"
-                  )}
+                  className={mobileLinkClass("/bookings")}
                 >
                   <span className="flex items-center gap-3">
                     <CalendarDays
@@ -505,6 +544,7 @@ const Navbar = () => {
                       strokeWidth={2}
                       aria-hidden="true"
                     />
+
                     My Bookings
                   </span>
 
@@ -525,7 +565,7 @@ const Navbar = () => {
                     to="/owner/dashboard"
                     onClick={closeMenu}
                     className={mobileLinkClass(
-                      "/owner/dashboard"
+                      "/owner/dashboard",
                     )}
                   >
                     <span className="flex items-center gap-3">
@@ -534,6 +574,7 @@ const Navbar = () => {
                         strokeWidth={2}
                         aria-hidden="true"
                       />
+
                       Dashboard
                     </span>
 
@@ -548,7 +589,7 @@ const Navbar = () => {
                     to="/owner/properties"
                     onClick={closeMenu}
                     className={mobileLinkClass(
-                      "/owner/properties"
+                      "/owner/properties",
                     )}
                   >
                     <span className="flex items-center gap-3">
@@ -557,6 +598,7 @@ const Navbar = () => {
                         strokeWidth={2}
                         aria-hidden="true"
                       />
+
                       My Properties
                     </span>
 
@@ -578,7 +620,7 @@ const Navbar = () => {
                     to="/admin/dashboard"
                     onClick={closeMenu}
                     className={mobileLinkClass(
-                      "/admin/dashboard"
+                      "/admin/dashboard",
                     )}
                   >
                     <span className="flex items-center gap-3">
@@ -587,6 +629,7 @@ const Navbar = () => {
                         strokeWidth={2}
                         aria-hidden="true"
                       />
+
                       Dashboard
                     </span>
 
@@ -601,7 +644,7 @@ const Navbar = () => {
                     to="/admin/users"
                     onClick={closeMenu}
                     className={mobileLinkClass(
-                      "/admin/users"
+                      "/admin/users",
                     )}
                   >
                     <span className="flex items-center gap-3">
@@ -610,6 +653,7 @@ const Navbar = () => {
                         strokeWidth={2}
                         aria-hidden="true"
                       />
+
                       Users
                     </span>
 
@@ -624,7 +668,7 @@ const Navbar = () => {
                     to="/admin/properties"
                     onClick={closeMenu}
                     className={mobileLinkClass(
-                      "/admin/properties"
+                      "/admin/properties",
                     )}
                   >
                     <span className="flex items-center gap-3">
@@ -633,6 +677,7 @@ const Navbar = () => {
                         strokeWidth={2}
                         aria-hidden="true"
                       />
+
                       Properties
                     </span>
 
@@ -647,7 +692,7 @@ const Navbar = () => {
                     to="/admin/bookings"
                     onClick={closeMenu}
                     className={mobileLinkClass(
-                      "/admin/bookings"
+                      "/admin/bookings",
                     )}
                   >
                     <span className="flex items-center gap-3">
@@ -656,6 +701,7 @@ const Navbar = () => {
                         strokeWidth={2}
                         aria-hidden="true"
                       />
+
                       Bookings
                     </span>
 
@@ -672,23 +718,50 @@ const Navbar = () => {
                   Logged Out
               ========================== */}
               {!isLoggedIn && (
-                <Link
-                  to="/login"
-                  onClick={closeMenu}
-                  className="
-                    mt-3 flex min-h-11
-                    items-center justify-center
-                    rounded-xl bg-blue-600
-                    px-4 py-3 text-sm font-semibold
-                    text-white shadow-sm transition
-                    hover:bg-blue-700
-                    focus:outline-none
-                    focus:ring-2 focus:ring-blue-500
-                    focus:ring-offset-2
-                  "
-                >
-                  Login
-                </Link>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {/* Login */}
+                  <Link
+                    to="/login"
+                    onClick={closeMenu}
+                    className="
+                      flex min-h-11 items-center
+                      justify-center rounded-xl
+                      border border-gray-200
+                      bg-white px-4 py-3
+                      text-sm font-semibold
+                      text-gray-700 transition-all
+                      duration-200
+                      hover:border-blue-200
+                      hover:bg-blue-50
+                      hover:text-blue-600
+                      focus:outline-none
+                      focus:ring-2 focus:ring-blue-500
+                      focus:ring-offset-2
+                    "
+                  >
+                    Login
+                  </Link>
+
+                  {/* Sign Up */}
+                  <Link
+                    to="/register"
+                    onClick={closeMenu}
+                    className="
+                      flex min-h-11 items-center
+                      justify-center rounded-xl
+                      bg-blue-600 px-4 py-3
+                      text-sm font-semibold text-white
+                      shadow-sm transition-all
+                      duration-200
+                      hover:bg-blue-700
+                      focus:outline-none
+                      focus:ring-2 focus:ring-blue-500
+                      focus:ring-offset-2
+                    "
+                  >
+                    Sign up
+                  </Link>
+                </div>
               )}
 
               {/* =========================
@@ -760,13 +833,16 @@ const Navbar = () => {
                         className="
                           flex h-8 w-8 items-center
                           justify-center rounded-lg
-                          bg-gray-100
+                          bg-gray-100 text-gray-600
                         "
                       >
-                        <span className="text-xs">
-                          🔔
-                        </span>
+                        <Bell
+                          size={16}
+                          strokeWidth={2}
+                          aria-hidden="true"
+                        />
                       </span>
+
                       Notifications
                     </span>
 
@@ -777,9 +853,7 @@ const Navbar = () => {
                   <Link
                     to="/profile"
                     onClick={closeMenu}
-                    className={mobileLinkClass(
-                      "/profile"
-                    )}
+                    className={mobileLinkClass("/profile")}
                   >
                     <span className="flex items-center gap-3">
                       <User
@@ -787,6 +861,7 @@ const Navbar = () => {
                         strokeWidth={2}
                         aria-hidden="true"
                       />
+
                       Profile
                     </span>
 
