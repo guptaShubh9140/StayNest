@@ -88,34 +88,12 @@ const createBooking = async (req, res) => {
       // User selected "I will decide later"
       bookingEnd = null;
     } else {
-      // 7. Calculate end date
-      let bookingEnd = null;
-
-      if (stayDuration === "open-ended") {
-        // User selected "I will decide later"
-        bookingEnd = null;
-      } else {
-        const durationMonths = {
-          1: 1,
-          3: 3,
-          6: 6,
-          12: 12,
-        };
-
-        const months = durationMonths[stayDuration];
-
-        bookingEnd = new Date(bookingStart);
-
-        const originalDay = bookingEnd.getDate();
-
-        bookingEnd.setMonth(bookingEnd.getMonth() + months);
-
-        // Handle dates such as Jan 31 + 1 month
-        // so JavaScript does not overflow into the following month.
-        if (bookingEnd.getDate() !== originalDay) {
-          bookingEnd.setDate(0);
-        }
-      }
+      const durationMonths = {
+        1: 1,
+        3: 3,
+        6: 6,
+        12: 12,
+      };
 
       const months = durationMonths[stayDuration];
 
@@ -126,7 +104,6 @@ const createBooking = async (req, res) => {
       bookingEnd.setMonth(bookingEnd.getMonth() + months);
 
       // Handle dates such as Jan 31 + 1 month
-      // so JavaScript does not overflow into the following month.
       if (bookingEnd.getDate() !== originalDay) {
         bookingEnd.setDate(0);
       }
