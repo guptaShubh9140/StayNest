@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+
 import { Link, useNavigate, useParams } from "react-router-dom";
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -24,17 +26,24 @@ import {
 } from "lucide-react";
 
 import { getPropertyById } from "../lib/api";
+
 import Button from "../components/ui/Button";
+
 import Card from "../components/ui/Card";
+
 import StatusBadge from "../components/ui/StatusBadge";
+
 import ErrorState from "../components/ui/ErrorState";
+
 import { useToast } from "../components/ui/Toast";
 
 const getTodayDate = () => {
   const date = new Date();
 
   const year = date.getFullYear();
+
   const month = String(date.getMonth() + 1).padStart(2, "0");
+
   const day = String(date.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
@@ -51,7 +60,9 @@ const formatDate = (dateString) => {
 
   return date.toLocaleDateString("en-IN", {
     day: "numeric",
+
     month: "short",
+
     year: "numeric",
   });
 };
@@ -78,8 +89,10 @@ const getRoomDescription = (room) => {
   if (room.roomType) {
     parts.push(
       room.roomType
+
         .replace(/([A-Z])/g, " $1")
-        .replace(/^./, (char) => char.toUpperCase())
+
+        .replace(/^./, (char) => char.toUpperCase()),
     );
   }
 
@@ -95,7 +108,9 @@ const formatPropertyType = (value) => {
 
   return String(value)
     .replace(/[-_]/g, " ")
+
     .replace(/([a-z])([A-Z])/g, "$1 $2")
+
     .replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
@@ -104,6 +119,7 @@ const formatGender = (value) => {
 
   return String(value)
     .replace(/[-_]/g, " ")
+
     .replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
@@ -119,7 +135,27 @@ const getMinimumEndDate = (startDate) => {
   date.setDate(date.getDate() + 1);
 
   const year = date.getFullYear();
+
   const month = String(date.getMonth() + 1).padStart(2, "0");
+
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
+const addMonthsToDate = (dateString, months) => {
+  if (!dateString || !months) return "";
+
+  const date = new Date(`${dateString}T12:00:00`);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  date.setMonth(date.getMonth() + Number(months));
+
+  const year = date.getFullYear();
+
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+
   const day = String(date.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
@@ -127,32 +163,44 @@ const getMinimumEndDate = (startDate) => {
 
 const PropertyDetails = () => {
   const { id } = useParams();
+
   const navigate = useNavigate();
+
   const { success, error: showError } = useToast();
 
   const [property, setProperty] = useState(null);
+
   const [selectedImage, setSelectedImage] = useState(0);
 
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState("");
 
   const [selectedRoom, setSelectedRoom] = useState(null);
 
   const [startDate, setStartDate] = useState("");
+
   const [endDate, setEndDate] = useState("");
 
+  const [stayDuration, setStayDuration] = useState("open-ended");
+
   const [bookingLoading, setBookingLoading] = useState(false);
+
   const [bookingError, setBookingError] = useState("");
+
   const [bookingSuccess, setBookingSuccess] = useState("");
+
   const [bookingConfirmation, setBookingConfirmation] = useState(null);
 
   const [favorite, setFavorite] = useState(false);
+
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     const fetchProperty = async () => {
       try {
         setLoading(true);
+
         setError("");
 
         const response = await getPropertyById(id);
@@ -166,7 +214,7 @@ const PropertyDetails = () => {
         setError(
           err?.response?.data?.message ||
             err?.message ||
-            "Unable to load this property."
+            "Unable to load this property.",
         );
       } finally {
         setLoading(false);
@@ -178,9 +226,18 @@ const PropertyDetails = () => {
     }
   }, [id]);
 
-  const images = property?.images || [];
+  const images = useMemo(() => {
+    const propertyImages = Array.isArray(property?.images)
+      ? property.images
+      : [];
+
+    // Remove empty values and duplicate image URLs
+    return [...new Set(propertyImages.filter(Boolean))];
+  }, [property]);
+
   const rooms = property?.rooms || [];
   const amenities = property?.amenities || [];
+
   const rules = property?.rules || [];
 
   const availableRoomsCount = useMemo(() => {
@@ -195,7 +252,9 @@ const PropertyDetails = () => {
 
   const startingRent = useMemo(() => {
     const rents = availableRooms
+
       .map((room) => Number(room.monthlyRent))
+
       .filter((rent) => Number.isFinite(rent));
 
     if (rents.length === 0) {
@@ -205,27 +264,26 @@ const PropertyDetails = () => {
     return Math.min(...rents);
   }, [availableRooms]);
 
-  const minimumEndDate = useMemo(
-    () => getMinimumEndDate(startDate),
-    [startDate]
-  );
-
   const currentImage = images[selectedImage];
 
-  const propertyLocation = [
-    property?.address?.area,
-    property?.address?.city,
-  ]
+  const propertyLocation = [property?.address?.area, property?.address?.city]
+
     .filter(Boolean)
+
     .join(", ");
 
   const fullLocation = [
     property?.address?.street,
+
     property?.address?.area,
+
     property?.address?.city,
+
     property?.address?.state,
   ]
+
     .filter(Boolean)
+
     .join(", ");
 
   const owner = property?.owner;
@@ -236,8 +294,11 @@ const PropertyDetails = () => {
     }
 
     setSelectedRoom(room);
+
     setBookingError("");
+
     setBookingSuccess("");
+
     setBookingConfirmation(null);
   };
 
@@ -247,7 +308,7 @@ const PropertyDetails = () => {
     setImageError(false);
 
     setSelectedImage((current) =>
-      current === 0 ? images.length - 1 : current - 1
+      current === 0 ? images.length - 1 : current - 1,
     );
   };
 
@@ -257,31 +318,51 @@ const PropertyDetails = () => {
     setImageError(false);
 
     setSelectedImage((current) =>
-      current === images.length - 1 ? 0 : current + 1
+      current === images.length - 1 ? 0 : current + 1,
     );
   };
 
   const handleStartDateChange = (value) => {
     setStartDate(value);
+
     setBookingError("");
+
     setBookingSuccess("");
+
     setBookingConfirmation(null);
 
-    if (endDate && value >= endDate) {
+    if (stayDuration === "open-ended") {
       setEndDate("");
+
+      return;
     }
+
+    setEndDate(addMonthsToDate(value, stayDuration));
   };
 
-  const handleEndDateChange = (value) => {
-    setEndDate(value);
+  const handleStayDurationChange = (value) => {
+    setStayDuration(value);
+
     setBookingError("");
+
     setBookingSuccess("");
+
     setBookingConfirmation(null);
+
+    if (value === "open-ended") {
+      setEndDate("");
+
+      return;
+    }
+
+    setEndDate(startDate ? addMonthsToDate(startDate, value) : "");
   };
 
   const handleBookNow = async () => {
     setBookingError("");
+
     setBookingSuccess("");
+
     setBookingConfirmation(null);
 
     const token = localStorage.getItem("token");
@@ -298,36 +379,51 @@ const PropertyDetails = () => {
 
     if (!selectedRoom) {
       const message = "Please select a room before requesting a booking.";
+
       setBookingError(message);
+
       showError(message);
+
       return;
     }
 
     if (Number(selectedRoom.availableRooms || 0) <= 0) {
       const message = "This room is currently unavailable.";
+
       setBookingError(message);
+
       showError(message);
+
       return;
     }
 
     if (!startDate) {
       const message = "Please select a move-in date.";
+
       setBookingError(message);
+
       showError(message);
+
       return;
     }
 
-    if (!endDate) {
-      const message = "Please select an end date.";
+    if (stayDuration !== "open-ended" && !endDate) {
+      const message = "Please select your expected stay duration.";
+
       setBookingError(message);
+
       showError(message);
+
       return;
     }
 
-    if (endDate <= startDate) {
-      const message = "End date must be after the move-in date.";
+    if (endDate && endDate <= startDate) {
+      const message = "Expected move-out date must be after the move-in date.";
+
       setBookingError(message);
+
       showError(message);
+
       return;
     }
 
@@ -339,15 +435,23 @@ const PropertyDetails = () => {
 
       const response = await fetch(`${API_URL}/bookings`, {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
+
           Authorization: `Bearer ${token}`,
         },
+
         body: JSON.stringify({
           propertyId: property._id,
+
           roomId: selectedRoom._id,
+
           startDate,
-          endDate,
+
+          endDate: endDate || null,
+
+          stayDuration,
         }),
       });
 
@@ -355,7 +459,7 @@ const PropertyDetails = () => {
 
       if (!response.ok) {
         throw new Error(
-          data?.message || data?.error || "Unable to create booking."
+          data?.message || data?.error || "Unable to create booking.",
         );
       }
 
@@ -366,11 +470,17 @@ const PropertyDetails = () => {
           data?._id ||
           data?.id ||
           "Created",
+
         propertyName: property.name,
+
         roomType: selectedRoom.roomType,
+
         startDate,
+
         endDate,
+
         monthlyRent: selectedRoom.monthlyRent,
+
         securityDeposit: selectedRoom.securityDeposit,
       };
 
@@ -381,12 +491,14 @@ const PropertyDetails = () => {
         "Booking request submitted successfully. Waiting for owner confirmation.";
 
       setBookingSuccess(message);
+
       success(message);
     } catch (err) {
       const message =
         err?.message || "Unable to create the booking. Please try again.";
 
       setBookingError(message);
+
       showError(message);
     } finally {
       setBookingLoading(false);
@@ -405,13 +517,17 @@ const PropertyDetails = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="h-[204px] rounded-2xl bg-gray-200" />
+
                 <div className="h-[204px] rounded-2xl bg-gray-200" />
+
                 <div className="h-[204px] rounded-2xl bg-gray-200" />
+
                 <div className="h-[204px] rounded-2xl bg-gray-200" />
               </div>
             </div>
 
             <div className="mt-8 h-10 w-2/3 rounded bg-gray-200" />
+
             <div className="mt-4 h-5 w-1/3 rounded bg-gray-200" />
           </div>
         </div>
@@ -450,6 +566,7 @@ const PropertyDetails = () => {
     <main className="min-h-screen bg-gray-50 pb-28 lg:pb-12">
       <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
         {/* Breadcrumb */}
+
         <div className="mb-5 flex items-center gap-2 text-sm text-gray-500">
           <Link
             to="/properties"
@@ -466,22 +583,27 @@ const PropertyDetails = () => {
         </div>
 
         {/* Gallery */}
+
         <section aria-label="Property photos">
-          <div className="grid gap-3 lg:grid-cols-[1.55fr_0.8fr]">
-            <div className="group relative min-h-[300px] overflow-hidden rounded-3xl bg-gray-100 sm:min-h-[420px] lg:min-h-[500px]">
+          <div className="grid gap-3 lg:h-[500px] lg:grid-cols-[1.55fr_0.8fr]">
+            {" "}
+            {/* Main image */}
+            <div className="group relative h-[420px] overflow-hidden rounded-3xl bg-slate-200 shadow-sm sm:h-[460px] lg:h-[500px]">
               {currentImage && !imageError ? (
                 <img
                   src={currentImage}
-                  alt={`${property.name || "Property"} ${
-                    selectedImage + 1
-                  }`}
-                  className="h-full min-h-[300px] w-full object-cover transition duration-500 group-hover:scale-[1.02] sm:min-h-[420px] lg:min-h-[500px]"
+                  alt={`${property.name || "Property"} ${selectedImage + 1}`}
+                  className="block h-full w-full object-contain"
                   onError={() => setImageError(true)}
                 />
               ) : (
-                <div className="flex h-full min-h-[300px] items-center justify-center sm:min-h-[420px] lg:min-h-[500px]">
+                <div className="flex h-full items-center justify-center">
                   <div className="text-center text-gray-400">
-                    <ImageOff size={42} className="mx-auto" />
+                    <ImageOff
+                      size={42}
+                      className="mx-auto"
+                      aria-hidden="true"
+                    />
                     <p className="mt-3 text-sm font-medium">
                       No image available
                     </p>
@@ -489,19 +611,20 @@ const PropertyDetails = () => {
                 </div>
               )}
 
+              {/* Gallery controls */}
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4 sm:p-5">
                 <Link
                   to="/properties"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-md transition hover:bg-black/50"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/35 text-white backdrop-blur-md transition hover:bg-black/50 focus:outline-none focus:ring-2 focus:ring-white/80"
                   aria-label="Back to properties"
                 >
-                  <ArrowLeft size={18} />
+                  <ArrowLeft size={18} aria-hidden="true" />
                 </Link>
 
                 <button
                   type="button"
                   onClick={() => setFavorite((value) => !value)}
-                  className={`inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 backdrop-blur-md transition ${
+                  className={`inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 backdrop-blur-md transition focus:outline-none focus:ring-2 focus:ring-white/80 ${
                     favorite
                       ? "bg-white text-red-500"
                       : "bg-black/35 text-white hover:bg-black/50"
@@ -515,6 +638,7 @@ const PropertyDetails = () => {
                   <Heart
                     size={19}
                     fill={favorite ? "currentColor" : "none"}
+                    aria-hidden="true"
                   />
                 </button>
               </div>
@@ -524,61 +648,128 @@ const PropertyDetails = () => {
                   <button
                     type="button"
                     onClick={handlePreviousImage}
-                    className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white"
+                    className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     aria-label="Previous image"
                   >
-                    <ChevronLeft size={20} />
+                    <ChevronLeft size={20} aria-hidden="true" />
                   </button>
 
                   <button
                     type="button"
                     onClick={handleNextImage}
-                    className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white"
+                    className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     aria-label="Next image"
                   >
-                    <ChevronRight size={20} />
+                    <ChevronRight size={20} aria-hidden="true" />
                   </button>
 
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/55 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md">
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md">
                     {selectedImage + 1} / {images.length}
                   </div>
                 </>
               )}
             </div>
-
-            <div className="hidden grid-cols-2 gap-3 lg:grid">
-              {[1, 2, 3, 4].map((offset) => {
-                const imageIndex = selectedImage + offset;
-                const image = images[imageIndex];
-
-                return (
+            {/* Desktop thumbnails */}
+            <div className="hidden h-full min-h-0 gap-3 lg:grid">
+              {images.length === 1 ? (
+                <>
+                  {/* Single image */}
                   <button
-                    key={`${offset}-${imageIndex}`}
                     type="button"
                     onClick={() => {
-                      if (image) {
-                        setSelectedImage(imageIndex);
-                        setImageError(false);
-                      }
+                      setSelectedImage(0);
+                      setImageError(false);
                     }}
-                    className={`group relative overflow-hidden rounded-2xl bg-gray-100 text-left ${
-                      image ? "cursor-pointer" : "cursor-default"
-                    }`}
+                    className="relative min-h-0 overflow-hidden rounded-2xl bg-gray-100 ring-2 ring-blue-600 ring-offset-2"
+                    aria-label="View property image 1"
+                    aria-current="true"
                   >
-                    {image ? (
-                      <img
-                        src={image}
-                        alt={`${property.name || "Property"} preview`}
-                        className="h-full min-h-[120px] w-full object-cover transition duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full min-h-[120px] items-center justify-center text-gray-300">
-                        <ImageOff size={26} />
-                      </div>
-                    )}
+                    <img
+                      src={images[0]}
+                      alt={`${property.name || "Property"} preview`}
+                      className="block h-full w-full object-cover"
+                      onError={(event) => {
+                        event.currentTarget.style.display = "none";
+                      }}
+                    />
+
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-blue-600" />
                   </button>
-                );
-              })}
+
+                  {/* No second photo */}
+                  <div className="flex min-h-0 items-center justify-center rounded-2xl bg-gray-50 ring-1 ring-gray-200">
+                    <div className="text-center text-gray-300">
+                      <ImageOff
+                        size={26}
+                        className="mx-auto"
+                        aria-hidden="true"
+                      />
+
+                      <span className="mt-2 block text-xs font-medium">
+                        No photo
+                      </span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div
+                  className="grid h-full min-h-0 gap-3"
+                  style={{
+                    gridTemplateRows: `repeat(${Math.min(
+                      images.length - 1,
+                      4,
+                    )}, minmax(0, 1fr))`,
+                  }}
+                >
+                  {images
+                    .map((image, originalIndex) => ({
+                      image,
+                      originalIndex,
+                    }))
+                    .filter(
+                      ({ originalIndex }) => originalIndex !== selectedImage,
+                    )
+                    .slice(0, 4)
+                    .map(({ image, originalIndex }, index) => {
+                      const remainingImages = images.length - 1 - 4;
+
+                      return (
+                        <button
+                          key={`${image}-${originalIndex}`}
+                          type="button"
+                          onClick={() => {
+                            setSelectedImage(originalIndex);
+                            setImageError(false);
+                          }}
+                          className="group relative min-h-0 overflow-hidden rounded-2xl bg-gray-100 text-left ring-1 ring-gray-200 transition hover:ring-2 hover:ring-blue-300"
+                          aria-label={`View property image ${
+                            originalIndex + 1
+                          }`}
+                        >
+                          <img
+                            src={image}
+                            alt={`${property.name || "Property"} preview ${
+                              originalIndex + 1
+                            }`}
+                            className="block h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                            onError={(event) => {
+                              event.currentTarget.style.display = "none";
+                            }}
+                          />
+
+                          {/* More images overlay */}
+                          {index === 3 && remainingImages > 0 && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white backdrop-blur-sm">
+                              <span className="rounded-full bg-black/50 px-3 py-1.5 text-sm font-semibold">
+                                +{remainingImages} more
+                              </span>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                </div>
+              )}
             </div>
           </div>
 
@@ -593,16 +784,21 @@ const PropertyDetails = () => {
                     setSelectedImage(index);
                     setImageError(false);
                   }}
-                  className={`h-16 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition ${
+                  className={`h-16 w-20 shrink-0 overflow-hidden rounded-xl border-2 bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     selectedImage === index
                       ? "border-blue-600"
                       : "border-transparent"
                   }`}
+                  aria-label={`View image ${index + 1}`}
+                  aria-current={selectedImage === index ? "true" : undefined}
                 >
                   <img
                     src={image}
                     alt=""
                     className="h-full w-full object-cover"
+                    onError={(event) => {
+                      event.currentTarget.style.display = "none";
+                    }}
                   />
                 </button>
               ))}
@@ -611,9 +807,11 @@ const PropertyDetails = () => {
         </section>
 
         {/* Main content */}
+
         <div className="mt-7 grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="min-w-0">
             {/* Header */}
+
             <section>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
@@ -646,26 +844,26 @@ const PropertyDetails = () => {
                       className="mt-0.5 shrink-0 text-blue-600"
                     />
 
-                    <span>{fullLocation || "Location available on request"}</span>
+                    <span>
+                      {fullLocation || "Location available on request"}
+                    </span>
                   </div>
                 </div>
 
-                {property.rating !== undefined &&
-                  property.rating !== null && (
-                    <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-sm">
-                      <Star
-                        size={17}
-                        className="fill-amber-400 text-amber-400"
-                      />
-                      <span className="font-bold text-gray-900">
-                        {Number(property.rating).toFixed(1)}
-                      </span>
-                    </div>
-                  )}
+                {property.rating !== undefined && property.rating !== null && (
+                  <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-sm">
+                    <Star size={17} className="fill-amber-400 text-amber-400" />
+
+                    <span className="font-bold text-gray-900">
+                      {Number(property.rating).toFixed(1)}
+                    </span>
+                  </div>
+                )}
               </div>
             </section>
 
             {/* Quick facts */}
+
             <section className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="rounded-2xl border border-gray-200 bg-white p-4">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
@@ -726,6 +924,7 @@ const PropertyDetails = () => {
             </section>
 
             {/* About */}
+
             <section className="mt-8 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">
@@ -744,6 +943,7 @@ const PropertyDetails = () => {
             </section>
 
             {/* Amenities */}
+
             <section className="mt-5 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">
                 Facilities
@@ -767,6 +967,7 @@ const PropertyDetails = () => {
                       <span className="text-sm font-medium text-gray-700">
                         {String(amenity)
                           .replace(/[-_]/g, " ")
+
                           .replace(/\b\w/g, (char) => char.toUpperCase())}
                       </span>
                     </div>
@@ -780,6 +981,7 @@ const PropertyDetails = () => {
             </section>
 
             {/* Rules */}
+
             <section className="mt-5 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
@@ -808,9 +1010,7 @@ const PropertyDetails = () => {
                         <Check size={14} />
                       </span>
 
-                      <p className="text-sm leading-6 text-gray-600">
-                        {rule}
-                      </p>
+                      <p className="text-sm leading-6 text-gray-600">{rule}</p>
                     </div>
                   ))}
                 </div>
@@ -822,6 +1022,7 @@ const PropertyDetails = () => {
             </section>
 
             {/* Owner */}
+
             <section className="mt-5 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">
                 Contact
@@ -842,9 +1043,7 @@ const PropertyDetails = () => {
                       {owner?.name || "Property Owner"}
                     </p>
 
-                    <p className="mt-1 text-sm text-gray-500">
-                      Property owner
-                    </p>
+                    <p className="mt-1 text-sm text-gray-500">Property owner</p>
                   </div>
                 </div>
 
@@ -896,6 +1095,7 @@ const PropertyDetails = () => {
           </div>
 
           {/* Booking sidebar */}
+
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <Card padding="none" className="overflow-hidden">
               <div className="border-b border-gray-100 bg-gradient-to-br from-blue-50 via-white to-purple-50 p-5 sm:p-6">
@@ -920,6 +1120,7 @@ const PropertyDetails = () => {
 
                   <div className="rounded-xl bg-white px-3 py-2 text-right shadow-sm">
                     <p className="text-xs text-gray-500">Available</p>
+
                     <p className="text-sm font-bold text-green-600">
                       {availableRoomsCount} room
                       {availableRoomsCount === 1 ? "" : "s"}
@@ -930,6 +1131,7 @@ const PropertyDetails = () => {
 
               <div className="p-5 sm:p-6">
                 {/* Rooms */}
+
                 <div>
                   <div className="flex items-center justify-between">
                     <h2 className="text-base font-extrabold text-gray-900">
@@ -944,11 +1146,9 @@ const PropertyDetails = () => {
                   <div className="mt-3 space-y-3">
                     {rooms.length > 0 ? (
                       rooms.map((room, index) => {
-                        const available =
-                          Number(room.availableRooms || 0) > 0;
+                        const available = Number(room.availableRooms || 0) > 0;
 
-                        const selected =
-                          selectedRoom?._id === room._id;
+                        const selected = selectedRoom?._id === room._id;
 
                         return (
                           <button
@@ -960,8 +1160,8 @@ const PropertyDetails = () => {
                               selected
                                 ? "border-blue-600 bg-blue-50/70 ring-2 ring-blue-100"
                                 : available
-                                ? "border-gray-200 bg-white hover:border-blue-200 hover:bg-blue-50/30"
-                                : "cursor-not-allowed border-gray-100 bg-gray-50 opacity-60"
+                                  ? "border-gray-200 bg-white hover:border-blue-200 hover:bg-blue-50/30"
+                                  : "cursor-not-allowed border-gray-100 bg-gray-50 opacity-60"
                             }`}
                           >
                             <div className="flex items-start justify-between gap-3">
@@ -999,9 +1199,7 @@ const PropertyDetails = () => {
                             <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
                               <span
                                 className={`text-xs font-semibold ${
-                                  available
-                                    ? "text-green-600"
-                                    : "text-red-500"
+                                  available ? "text-green-600" : "text-red-500"
                                 }`}
                               >
                                 {available
@@ -1025,6 +1223,7 @@ const PropertyDetails = () => {
                         <p className="text-sm font-semibold text-gray-700">
                           No rooms available
                         </p>
+
                         <p className="mt-1 text-xs text-gray-500">
                           This property currently has no listed rooms.
                         </p>
@@ -1034,6 +1233,7 @@ const PropertyDetails = () => {
                 </div>
 
                 {/* Selected room summary */}
+
                 {selectedRoom && (
                   <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
                     <div className="flex items-start justify-between gap-3">
@@ -1059,7 +1259,10 @@ const PropertyDetails = () => {
 
                     <div className="mt-3 grid grid-cols-2 gap-3">
                       <div className="rounded-xl bg-white px-3 py-2.5">
-                        <p className="text-[11px] text-gray-500">Monthly rent</p>
+                        <p className="text-[11px] text-gray-500">
+                          Monthly rent
+                        </p>
+
                         <p className="mt-1 text-sm font-bold text-gray-900">
                           {formatCurrency(selectedRoom.monthlyRent)}
                         </p>
@@ -1069,6 +1272,7 @@ const PropertyDetails = () => {
                         <p className="text-[11px] text-gray-500">
                           Security deposit
                         </p>
+
                         <p className="mt-1 text-sm font-bold text-gray-900">
                           {selectedRoom.securityDeposit !== undefined
                             ? formatCurrency(selectedRoom.securityDeposit)
@@ -1079,13 +1283,20 @@ const PropertyDetails = () => {
                   </div>
                 )}
 
-                {/* Dates */}
-                <div className="mt-6">
-                  <h2 className="text-base font-extrabold text-gray-900">
-                    Select your dates
-                  </h2>
+                {/* Stay dates */}
 
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                <div className="mt-6">
+                  <div>
+                    <h2 className="text-base font-extrabold text-gray-900">
+                      Plan your stay
+                    </h2>
+
+                    <p className="mt-1 text-xs leading-5 text-gray-500">
+                      You only need to know when you want to move in.
+                    </p>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                     <label className="block">
                       <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-600">
                         <CalendarDays size={14} />
@@ -1106,28 +1317,44 @@ const PropertyDetails = () => {
                     <label className="block">
                       <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-600">
                         <CalendarDays size={14} />
-                        End date
+                        Expected stay
                       </span>
 
-                      <input
-                        type="date"
-                        min={minimumEndDate || getTodayDate()}
-                        value={endDate}
+                      <select
+                        value={stayDuration}
                         onChange={(event) =>
-                          handleEndDateChange(event.target.value)
+                          handleStayDurationChange(event.target.value)
                         }
                         disabled={!startDate}
                         className="min-h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-800 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
-                      />
+                      >
+                        <option value="open-ended">I will decide later</option>
+
+                        <option value="1">1 month</option>
+
+                        <option value="3">3 months</option>
+
+                        <option value="6">6 months</option>
+
+                        <option value="12">12 months</option>
+                      </select>
                     </label>
+                  </div>
+
+                  <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50/60 px-3.5 py-3 text-xs leading-5 text-blue-800">
+                    {stayDuration === "open-ended"
+                      ? "No fixed move-out date is required. You can discuss the move-out date with the property owner later according to the property terms."
+                      : `Expected move-out date: ${formatDate(endDate)}`}
                   </div>
                 </div>
 
                 {/* Price summary */}
+
                 {selectedRoom && (
                   <div className="mt-5 rounded-2xl bg-gray-50 p-4">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">Monthly rent</span>
+
                       <span className="font-semibold text-gray-900">
                         {formatCurrency(selectedRoom.monthlyRent)}
                       </span>
@@ -1139,6 +1366,7 @@ const PropertyDetails = () => {
                           <span className="text-gray-500">
                             Security deposit
                           </span>
+
                           <span className="font-semibold text-gray-900">
                             {formatCurrency(selectedRoom.securityDeposit)}
                           </span>
@@ -1155,7 +1383,7 @@ const PropertyDetails = () => {
                       <span className="text-lg font-extrabold text-gray-950">
                         {formatCurrency(
                           Number(selectedRoom.monthlyRent || 0) +
-                            Number(selectedRoom.securityDeposit || 0)
+                            Number(selectedRoom.securityDeposit || 0),
                         )}
                       </span>
                     </div>
@@ -1168,6 +1396,7 @@ const PropertyDetails = () => {
                 )}
 
                 {/* Booking errors */}
+
                 {bookingError && (
                   <div className="mt-5 flex gap-3 rounded-2xl border border-red-100 bg-red-50 p-4">
                     <CircleAlert
@@ -1188,6 +1417,7 @@ const PropertyDetails = () => {
                 )}
 
                 {/* Success */}
+
                 {bookingSuccess && (
                   <div className="mt-5 rounded-2xl border border-green-100 bg-green-50 p-4">
                     <div className="flex gap-3">
@@ -1209,6 +1439,7 @@ const PropertyDetails = () => {
                 )}
 
                 {/* Confirmation */}
+
                 {bookingConfirmation && (
                   <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
                     <div className="flex items-start justify-between gap-3">
@@ -1228,6 +1459,7 @@ const PropertyDetails = () => {
                     <div className="mt-4 space-y-2 text-xs">
                       <div className="flex justify-between gap-4">
                         <span className="text-gray-500">Booking ID</span>
+
                         <span className="font-semibold text-gray-800">
                           {bookingConfirmation.bookingId}
                         </span>
@@ -1235,24 +1467,27 @@ const PropertyDetails = () => {
 
                       <div className="flex justify-between gap-4">
                         <span className="text-gray-500">Room</span>
+
                         <span className="font-semibold text-gray-800">
-                          {formatPropertyType(
-                            bookingConfirmation.roomType
-                          )}
+                          {formatPropertyType(bookingConfirmation.roomType)}
                         </span>
                       </div>
 
                       <div className="flex justify-between gap-4">
                         <span className="text-gray-500">Move-in</span>
+
                         <span className="font-semibold text-gray-800">
                           {formatDate(bookingConfirmation.startDate)}
                         </span>
                       </div>
 
                       <div className="flex justify-between gap-4">
-                        <span className="text-gray-500">End date</span>
-                        <span className="font-semibold text-gray-800">
-                          {formatDate(bookingConfirmation.endDate)}
+                        <span className="text-gray-500">Expected stay</span>
+
+                        <span className="text-right font-semibold text-gray-800">
+                          {bookingConfirmation.endDate
+                            ? formatDate(bookingConfirmation.endDate)
+                            : "Move-out date to be decided later"}
                         </span>
                       </div>
                     </div>
@@ -1289,9 +1524,10 @@ const PropertyDetails = () => {
 
                 <div className="mt-4 flex items-start gap-2 text-[11px] leading-5 text-gray-500">
                   <ShieldCheck size={15} className="mt-0.5 shrink-0" />
+
                   <span>
-                    Your request is sent to the property owner for
-                    confirmation. Payment is handled after confirmation.
+                    Your request is sent to the property owner for confirmation.
+                    Payment is handled after confirmation.
                   </span>
                 </div>
               </div>
@@ -1301,6 +1537,7 @@ const PropertyDetails = () => {
       </div>
 
       {/* Mobile sticky booking CTA */}
+
       {!bookingConfirmation && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 p-3 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur-lg lg:hidden">
           <div className="mx-auto flex max-w-7xl items-center gap-3">
@@ -1315,8 +1552,8 @@ const PropertyDetails = () => {
                 {selectedRoom
                   ? `${formatCurrency(selectedRoom.monthlyRent)} / month`
                   : startingRent !== null
-                  ? `From ${formatCurrency(startingRent)} / month`
-                  : "Price unavailable"}
+                    ? `From ${formatCurrency(startingRent)} / month`
+                    : "Price unavailable"}
               </p>
             </div>
 
@@ -1324,8 +1561,7 @@ const PropertyDetails = () => {
               size="md"
               loading={bookingLoading}
               disabled={
-                !selectedRoom ||
-                Number(selectedRoom.availableRooms || 0) <= 0
+                !selectedRoom || Number(selectedRoom.availableRooms || 0) <= 0
               }
               onClick={handleBookNow}
               icon={ArrowRight}

@@ -5,7 +5,13 @@ const Property = require("../models/Property");
 
 const createBooking = async (req, res) => {
   try {
-    const { propertyId, roomId, startDate, endDate } = req.body;
+    const {
+      propertyId,
+      roomId,
+      startDate,
+      endDate,
+      stayDuration = "open-ended",
+    } = req.body;
 
     // 1. Make sure user is authenticated
     if (!req.user) {
@@ -36,14 +42,24 @@ const createBooking = async (req, res) => {
     }
 
     // 3. Validate required fields
-    if (!propertyId || !roomId || !startDate || !endDate) {
+    if (!propertyId || !roomId || !startDate) {
       return res.status(400).json({
         success: false,
-        message: "propertyId, roomId, startDate and endDate are required",
+        message: "propertyId, roomId and startDate are required",
       });
     }
 
-    // 4. Validate MongoDB IDs
+    // 4. Validate stay duration
+    const allowedStayDurations = ["1", "3", "6", "12", "open-ended"];
+
+    if (!allowedStayDurations.includes(stayDuration)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid stay duration",
+      });
+    }
+
+    // 5. Validate MongoDB IDs
     if (
       !mongoose.Types.ObjectId.isValid(propertyId) ||
       !mongoose.Types.ObjectId.isValid(roomId) ||
@@ -55,28 +71,90 @@ const createBooking = async (req, res) => {
       });
     }
 
-    // 5. Validate dates
+    // 6. Validate start date
     const bookingStart = new Date(startDate);
-    const bookingEnd = new Date(endDate);
 
-    if (
-      Number.isNaN(bookingStart.getTime()) ||
-      Number.isNaN(bookingEnd.getTime())
-    ) {
+    if (Number.isNaN(bookingStart.getTime())) {
       return res.status(400).json({
         success: false,
-        message: "Invalid startDate or endDate",
+        message: "Invalid startDate",
       });
     }
 
-    if (bookingEnd <= bookingStart) {
-      return res.status(400).json({
-        success: false,
-        message: "endDate must be after startDate",
-      });
+    // 7. Calculate end date
+    let bookingEnd = null;
+
+    if (stayDuration === "open-ended") {
+      // User selected "I will decide later"
+      bookingEnd = null;
+    } else {
+      // 7. Calculate end date
+      let bookingEnd = null;
+
+      if (stayDuration === "open-ended") {
+        // User selected "I will decide later"
+        bookingEnd = null;
+      } else {
+        const durationMonths = {
+          1: 1,
+          3: 3,
+          6: 6,
+          12: 12,
+        };
+
+        const months = durationMonths[stayDuration];
+
+        bookingEnd = new Date(bookingStart);
+
+        const originalDay = bookingEnd.getDate();
+
+        bookingEnd.setMonth(bookingEnd.getMonth() + months);
+
+        // Handle dates such as Jan 31 + 1 month
+        // so JavaScript does not overflow into the following month.
+        if (bookingEnd.getDate() !== originalDay) {
+          bookingEnd.setDate(0);
+        }
+      }
+
+      const months = durationMonths[stayDuration];
+
+      bookingEnd = new Date(bookingStart);
+
+      const originalDay = bookingEnd.getDate();
+
+      bookingEnd.setMonth(bookingEnd.getMonth() + months);
+
+      // Handle dates such as Jan 31 + 1 month
+      // so JavaScript does not overflow into the following month.
+      if (bookingEnd.getDate() !== originalDay) {
+        bookingEnd.setDate(0);
+      }
     }
 
-    // 6. Find approved and active property
+    // 8. If frontend explicitly sends endDate,
+    // validate it for open-ended/future compatibility.
+    if (endDate && stayDuration === "open-ended") {
+      const providedEndDate = new Date(endDate);
+
+      if (Number.isNaN(providedEndDate.getTime())) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid endDate",
+        });
+      }
+
+      if (providedEndDate <= bookingStart) {
+        return res.status(400).json({
+          success: false,
+          message: "endDate must be after startDate",
+        });
+      }
+
+      bookingEnd = providedEndDate;
+    }
+
+    // 9. Find approved and active property
     const property = await Property.findOne({
       _id: propertyId,
       isApproved: true,
@@ -90,7 +168,7 @@ const createBooking = async (req, res) => {
       });
     }
 
-    // 7. Find selected room
+    // 10. Find selected room
     const room = property.rooms.id(roomId);
 
     if (!room) {
@@ -100,7 +178,7 @@ const createBooking = async (req, res) => {
       });
     }
 
-    // 8. Check room availability
+    // 11. Check room availability
     if (room.availableRooms === undefined || room.availableRooms <= 0) {
       return res.status(400).json({
         success: false,
@@ -108,7 +186,7 @@ const createBooking = async (req, res) => {
       });
     }
 
-    // 9. Check existing active booking
+    // 12. Check existing active booking
     const existingBooking = await Booking.findOne({
       student: studentId,
       property: propertyId,
@@ -125,7 +203,7 @@ const createBooking = async (req, res) => {
       });
     }
 
-    // 10. Create booking
+    // 13. Create booking
     const booking = await Booking.create({
       student: studentId,
       property: property._id,
@@ -133,6 +211,7 @@ const createBooking = async (req, res) => {
 
       startDate: bookingStart,
       endDate: bookingEnd,
+      stayDuration,
 
       // Price snapshot
       monthlyRent: room.monthlyRent,
@@ -142,7 +221,7 @@ const createBooking = async (req, res) => {
       paymentStatus: "pending",
     });
 
-    // 11. Return successful response
+    // 14. Return successful response
     return res.status(201).json({
       success: true,
       message: "Booking created successfully",
@@ -266,10 +345,7 @@ const confirmBooking = async (req, res) => {
     }
 
     // 2. Only owner or admin can confirm
-    if (
-      req.user.role !== "owner" &&
-      req.user.role !== "admin"
-    ) {
+    if (req.user.role !== "owner" && req.user.role !== "admin") {
       return res.status(403).json({
         success: false,
         message: "Only owners or admins can confirm bookings",
@@ -308,10 +384,7 @@ const confirmBooking = async (req, res) => {
     if (req.user.role === "owner") {
       const property = await Property.findOne({
         _id: booking.property,
-        owner:
-          req.user._id ||
-          req.user.id ||
-          req.user.userId,
+        owner: req.user._id || req.user.id || req.user.userId,
       });
 
       if (!property) {
@@ -354,10 +427,7 @@ const rejectBooking = async (req, res) => {
     }
 
     // 2. Only owner or admin can reject
-    if (
-      req.user.role !== "owner" &&
-      req.user.role !== "admin"
-    ) {
+    if (req.user.role !== "owner" && req.user.role !== "admin") {
       return res.status(403).json({
         success: false,
         message: "Only owners or admins can reject bookings",
@@ -398,17 +468,13 @@ const rejectBooking = async (req, res) => {
     if (booking.status !== "pending") {
       return res.status(400).json({
         success: false,
-        message:
-          `Booking cannot be rejected because its current status is "${booking.status}"`,
+        message: `Booking cannot be rejected because its current status is "${booking.status}"`,
       });
     }
 
     // 7. Verify property ownership for owner
     if (req.user.role === "owner") {
-      const ownerId =
-        req.user._id ||
-        req.user.id ||
-        req.user.userId;
+      const ownerId = req.user._id || req.user.id || req.user.userId;
 
       const property = await Property.findOne({
         _id: booking.property,
@@ -457,10 +523,7 @@ const completeBooking = async (req, res) => {
     }
 
     // 2. Only owner or admin
-    if (
-      req.user.role !== "owner" &&
-      req.user.role !== "admin"
-    ) {
+    if (req.user.role !== "owner" && req.user.role !== "admin") {
       return res.status(403).json({
         success: false,
         message: "Only owners or admins can complete bookings",
@@ -491,17 +554,13 @@ const completeBooking = async (req, res) => {
     if (booking.status !== "confirmed") {
       return res.status(400).json({
         success: false,
-        message:
-          `Booking cannot be completed because its current status is "${booking.status}"`,
+        message: `Booking cannot be completed because its current status is "${booking.status}"`,
       });
     }
 
     // 6. Verify owner owns the property
     if (req.user.role === "owner") {
-      const ownerId =
-        req.user._id ||
-        req.user.id ||
-        req.user.userId;
+      const ownerId = req.user._id || req.user.id || req.user.userId;
 
       const property = await Property.findOne({
         _id: booking.property,

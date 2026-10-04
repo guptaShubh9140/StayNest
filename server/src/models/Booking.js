@@ -22,14 +22,26 @@ const bookingSchema = new mongoose.Schema(
       index: true,
     },
 
+    // Move-in date is always required
     startDate: {
       type: Date,
       required: true,
     },
 
+    // Move-out date is optional.
+    // null means the student has not decided yet.
     endDate: {
       type: Date,
-      required: true,
+      required: false,
+      default: null,
+    },
+
+    // Selected stay duration
+    // "open-ended" means the student will decide later.
+    stayDuration: {
+      type: String,
+      enum: ["1", "3", "6", "12", "open-ended"],
+      default: "open-ended",
     },
 
     monthlyRent: {
